@@ -1,4 +1,12 @@
+"use client";
+
+import { useState } from "react";
+
 export default function DashboardPage() {
+  const [message, setMessage] = useState("");
+  const [reply, setReply] = useState("AI reflections will appear here.");
+  const [loading, setLoading] = useState(false);
+
   const goals = [
     "Attend weekly recovery coaching session",
     "Complete reflection journal",
@@ -28,9 +36,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <button className="rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-black">
-            Profile
-          </button>
+          <div className="flex items-center gap-3">
+            <a
+              href="/"
+              className="rounded-full border border-white/20 px-5 py-2 text-sm text-white hover:bg-white hover:text-black"
+            >
+              Home
+            </a>
+
+            <button className="rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-black">
+              Profile
+            </button>
+          </div>
         </div>
       </div>
 
@@ -114,6 +131,69 @@ export default function DashboardPage() {
               <p className="mt-2 text-gray-400">
                 Learning modules available.
               </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+            <p className="text-sm uppercase tracking-[0.3em] text-orange-400">
+              MAUNi Reflection Assistant
+            </p>
+
+            <h2 className="mt-3 text-2xl font-bold">
+              How are you feeling today?
+            </h2>
+
+            <p className="mt-3 max-w-2xl text-gray-400">
+              Share a reflection, challenge, thought, or recovery experience and
+              receive supportive coaching-style guidance.
+            </p>
+
+            <div className="mt-6 space-y-4">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Write your reflection here..."
+                className="min-h-[140px] w-full rounded-2xl border border-white/10 bg-black/40 p-4 text-white outline-none placeholder:text-gray-500 focus:border-orange-400"
+              />
+
+              <button
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+
+                    const response = await fetch("/api/coach", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        message,
+                      }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                      setReply(data.error || "The AI route returned an error.");
+                      return;
+                    }
+
+                    setReply(data.reply);
+                  } catch (error) {
+                    console.error(error);
+                    setReply("Something went wrong.");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="rounded-2xl bg-orange-500 px-6 py-3 font-semibold text-black hover:bg-orange-400"
+              >
+                {loading ? "Thinking..." : "Ask MAUNi"}
+              </button>
+
+              <div className="rounded-2xl border border-white/10 bg-black/40 p-5 leading-7 text-gray-300">
+                {reply}
+              </div>
             </div>
           </div>
 
