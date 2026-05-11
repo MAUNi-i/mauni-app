@@ -1,69 +1,116 @@
+import Image from "next/image";
+
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#050505] px-6 text-white">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl">
-        <div className="mb-6">
+    <main className="flex min-h-screen items-center justify-center bg-[#fbf7ef] px-6 py-12 text-[#15172f]">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-[#eadfd5] bg-white shadow-sm md:grid-cols-2">
+        <section className="hidden bg-[#fff7f0] p-10 md:flex md:flex-col md:justify-between">
+          <a href="/" className="flex items-center gap-4">
+            <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-white">
+              <Image
+                src="/mauni-m.jpg"
+                alt="MAUNi logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+
+            <span className="text-2xl font-bold tracking-tight">MAUNi</span>
+          </a>
+
+          <div>
+            <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-[#f05a28]">
+              Recovery Coaching
+            </p>
+
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight">
+              Continue your recovery journey with support and structure.
+            </h1>
+
+            <p className="mt-6 text-lg leading-8 text-slate-600">
+              Sign in to access your dashboard, reflections, goals, learning
+              pathways, and MAUNi coaching tools.
+            </p>
+          </div>
+
+          <p className="text-sm text-slate-500">
+            Technology should amplify care, not replace it.
+          </p>
+        </section>
+
+        <section className="p-8 md:p-12">
           <a
             href="/"
-            className="text-sm text-gray-400 hover:text-white"
+            className="mb-8 inline-block text-sm font-medium text-slate-500 hover:text-[#f05a28]"
           >
             ← Back to Home
           </a>
-        </div>
 
-        <div className="mb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-2xl font-bold text-black">
-            M
+          <div className="mb-8 md:hidden">
+            <div className="relative mb-4 h-14 w-14 overflow-hidden rounded-xl bg-white">
+              <Image
+                src="/mauni-m.jpg"
+                alt="MAUNi logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
 
-          <h1 className="mt-6 text-4xl font-bold">
+          <p className="mb-3 text-sm font-bold uppercase tracking-[0.35em] text-[#f05a28]">
             Welcome Back
-          </h1>
-
-          <p className="mt-3 text-gray-400">
-            Sign in to continue your recovery journey.
           </p>
-        </div>
 
-        <form className="space-y-5">
-          <div>
-            <label className="mb-2 block text-sm text-gray-300">
-              Email Address
-            </label>
+          <h2 className="text-4xl font-semibold tracking-tight">
+            Sign in to MAUNi.
+          </h2>
 
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-orange-400"
-            />
+          <p className="mt-3 leading-7 text-slate-600">
+            Access your recovery coaching dashboard.
+          </p>
+
+          <form className="mt-8 space-y-5">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="w-full rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-4 text-[#15172f] outline-none placeholder:text-slate-400 focus:border-[#f05a28]"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Password
+              </label>
+
+              <input
+                type="password"
+                placeholder="••••••••"
+                className="w-full rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-4 text-[#15172f] outline-none placeholder:text-slate-400 focus:border-[#f05a28]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-[#f05a28] py-4 font-bold text-white shadow-sm hover:bg-[#d94e20]"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="mt-8 text-center text-sm text-slate-500">
+            New to MAUNi?{" "}
+            <a href="/signup" className="font-semibold text-[#f05a28]">
+              Create account
+            </a>
           </div>
-
-          <div>
-            <label className="mb-2 block text-sm text-gray-300">
-              Password
-            </label>
-
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-orange-400"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded-2xl bg-orange-500 py-3 font-semibold text-black transition hover:bg-orange-400"
-          >
-            Sign In
-          </button>
-        </form>
-
-        <div className="mt-8 text-center text-sm text-gray-500">
-          New to MAUNi?{" "}
-          <a href="/signup" className="text-orange-400 hover:text-orange-300">
-            Create account
-          </a>
-        </div>
+        </section>
       </div>
     </main>
   );
