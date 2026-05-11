@@ -1,12 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
   const [message, setMessage] = useState("");
   const [reply, setReply] = useState("Your MAUNi reflection will appear here.");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function checkUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+      }
+    }
+
+    checkUser();
+  }, []);
 
   const goals = [
     "Attend weekly recovery coaching session",

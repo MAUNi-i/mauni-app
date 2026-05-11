@@ -1,6 +1,41 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error(error);
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#fbf7ef] px-6 py-12 text-[#15172f]">
       <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-[#eadfd5] bg-white shadow-sm md:grid-cols-2">
@@ -71,15 +106,18 @@ export default function LoginPage() {
             Access your recovery coaching dashboard.
           </p>
 
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleLogin} className="mt-8 space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Email Address
               </label>
 
               <input
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 type="email"
                 placeholder="you@example.com"
+                required
                 className="w-full rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-4 text-[#15172f] outline-none placeholder:text-slate-400 focus:border-[#f05a28]"
               />
             </div>
@@ -90,19 +128,29 @@ export default function LoginPage() {
               </label>
 
               <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 type="password"
                 placeholder="••••••••"
+                required
                 className="w-full rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-4 text-[#15172f] outline-none placeholder:text-slate-400 focus:border-[#f05a28]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-2xl bg-[#f05a28] py-4 font-bold text-white shadow-sm hover:bg-[#d94e20]"
+              disabled={loading}
+              className="w-full rounded-2xl bg-[#f05a28] py-4 font-bold text-white shadow-sm hover:bg-[#d94e20] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
+
+          {message && (
+            <div className="mt-6 rounded-2xl border border-[#eadfd5] bg-[#fffaf5] p-4 text-sm leading-6 text-slate-700">
+              {message}
+            </div>
+          )}
 
           <div className="mt-8 text-center text-sm text-slate-500">
             New to MAUNi?{" "}
