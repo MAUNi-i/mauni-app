@@ -1,31 +1,58 @@
 import OpenAI from "openai";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabasePublishableKey =
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-    if (!apiKey) {
+    if (!apiKey || !supabaseUrl || !supabasePublishableKey) {
       return Response.json(
-        { error: "OPENAI_API_KEY is missing from .env.local" },
+        { error: "Missing required environment variables." },
         { status: 500 }
       );
     }
 
-    const client = new OpenAI({
-      apiKey,
-    });
-
     const body = await request.json();
     const message = body.message;
+    const accessToken = body.accessToken;
 
     if (!message) {
+      return Response.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    if (!accessToken) {
       return Response.json(
-        { error: "Message is required" },
-        { status: 400 }
+        { error: "User session is required." },
+        { status: 401 }
       );
     }
 
-    const response = await client.responses.create({
+    const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    });
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return Response.json(
+        { error: "Could not verify authenticated user." },
+        { status: 401 }
+      );
+    }
+
+    const openai = new OpenAI({ apiKey });
+
+    const response = await openai.responses.create({
       model: "gpt-4o-mini",
       input: [
         {
@@ -40,18 +67,24 @@ export async function POST(request: Request) {
       ],
     });
 
-    return Response.json({
-      reply: response.output_text,
+    const reply = response.output_text;
+
+    const { error: insertError } = await supabase.from("reflections").insert({
+      user_id: user.id,
+      message,
+      reply,
     });
+
+    if (insertError) {
+      return Response.json({ error: insertError.message }, { status: 500 });
+    }
+
+    return Response.json({ reply });
   } catch (error) {
     console.error("MAUNi AI error:", error);
 
-    const message =
-      error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : "Unknown error";
 
-    return Response.json(
-      { error: message },
-      { status: 500 }
-    );
+    return Response.json({ error: message }, { status: 500 });
   }
 }

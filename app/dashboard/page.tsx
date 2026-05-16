@@ -4,23 +4,56 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
+type Reflection = {
+  id: string;
+  message: string;
+  reply: string;
+  created_at: string;
+};
+
 export default function DashboardPage() {
   const [message, setMessage] = useState("");
   const [reply, setReply] = useState("Your MAUNi reflection will appear here.");
   const [loading, setLoading] = useState(false);
+  const [reflections, setReflections] = useState<Reflection[]>([]);
+
+  async function loadReflections() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("reflections")
+      .select("id, message, reply, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.error("Error loading reflections:", error);
+      return;
+    }
+
+    setReflections(data || []);
+  }
 
   useEffect(() => {
-    async function checkUser() {
+    async function checkUserAndLoadReflections() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (!user) {
         window.location.href = "/login";
+        return;
       }
+
+      await loadReflections();
     }
 
-    checkUser();
+    checkUserAndLoadReflections();
   }, []);
 
   const goals = [
@@ -52,8 +85,7 @@ export default function DashboardPage() {
 
             <div>
               <p className="text-lg font-bold tracking-tight">
-                MAUNi
-                <span className="text-[#f05a28]"> Platform</span>
+                MAUNi <span className="text-[#f05a28]">Platform</span>
               </p>
               <p className="text-sm text-slate-500">
                 Recovery coaching dashboard
@@ -61,20 +93,14 @@ export default function DashboardPage() {
             </div>
           </a>
 
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-            <a href="/" className="hover:text-[#f05a28]">
-              Home
-            </a>
-            <a href="/login" className="hover:text-[#f05a28]">
-              Login
-            </a>
-            <a href="/signup" className="hover:text-[#f05a28]">
-              Signup
-            </a>
-          </nav>
-
-          <button className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#d94e20]">
-            Profile
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/login";
+            }}
+            className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#d94e20]"
+          >
+            Logout
           </button>
         </div>
       </header>
@@ -86,26 +112,47 @@ export default function DashboardPage() {
           </p>
 
           <div className="mt-6 space-y-3">
-            <div className="rounded-2xl bg-[#f05a28] px-4 py-3 font-semibold text-white">
+            <a
+              href="/dashboard"
+              className="block rounded-2xl bg-[#f05a28] px-4 py-3 font-semibold text-white"
+            >
               Dashboard
-            </div>
+            </a>
 
-            {["Coaching", "Learning", "Community", "Reflections"].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700"
-                >
-                  {item}
-                </div>
-              )
-            )}
-          </div>
+            <a
+              href="/dashboard/journal"
+              className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
+            >
+              Journal
+            </a>
 
-          <div className="mt-8 rounded-2xl border-l-4 border-[#f05a28] bg-[#fff7f0] p-4">
-            <p className="text-sm leading-6 text-slate-700">
-              “Technology should amplify care, not replace it.”
-            </p>
+            <a
+              href="/dashboard/timeline"
+              className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
+            >
+              Timeline
+            </a>
+
+            <a
+              href="/dashboard/goals"
+              className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
+            >
+              Goals
+            </a>
+
+            <a
+              href="/dashboard/reflections"
+              className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
+            >
+              Reflections
+            </a>
+
+            <a
+              href="/dashboard/learning"
+              className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
+            >
+              Learning
+            </a>
           </div>
         </aside>
 
@@ -146,9 +193,9 @@ export default function DashboardPage() {
                 text: "Active recovery goals in progress.",
               },
               {
-                label: "Coaching",
-                value: "1",
-                text: "Upcoming coaching check-in scheduled.",
+                label: "Reflections",
+                value: String(reflections.length),
+                text: "Recent saved reflections.",
               },
               {
                 label: "Learning",
@@ -171,115 +218,6 @@ export default function DashboardPage() {
                 <p className="mt-3 leading-7 text-slate-600">{card.text}</p>
               </div>
             ))}
-          </section>
-
-          <section className="rounded-3xl border border-[#eadfd5] bg-white p-8 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f05a28]">
-              MAUNi Reflection Assistant
-            </p>
-
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#15172f]">
-              How are you feeling today?
-            </h2>
-
-            <p className="mt-3 max-w-2xl leading-7 text-slate-600">
-              Share a reflection, challenge, thought, or recovery experience and
-              receive supportive coaching-style guidance.
-            </p>
-
-            <div className="mt-6 space-y-4">
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write your reflection here..."
-                className="min-h-[150px] w-full rounded-3xl border border-[#eadfd5] bg-[#fffaf5] p-5 text-[#15172f] outline-none placeholder:text-slate-400 focus:border-[#f05a28]"
-              />
-
-              <button
-                onClick={async () => {
-                  try {
-                    if (!message.trim()) {
-                      setReply("Please write a reflection first.");
-                      return;
-                    }
-
-                    setLoading(true);
-
-                    const response = await fetch("/api/coach", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        message,
-                      }),
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                      setReply(data.error || "The AI route returned an error.");
-                      return;
-                    }
-
-                    setReply(data.reply);
-                  } catch (error) {
-                    console.error(error);
-                    setReply("Something went wrong.");
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-                className="rounded-xl bg-[#f05a28] px-7 py-4 font-semibold text-white shadow-sm hover:bg-[#d94e20]"
-              >
-                {loading ? "Reflecting..." : "Ask MAUNi"}
-              </button>
-
-              <div className="rounded-3xl border border-[#eadfd5] bg-[#fffaf5] p-6 leading-8 text-slate-700">
-                {reply}
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f05a28]">
-                Current Goals
-              </p>
-
-              <div className="mt-6 space-y-4">
-                {goals.map((goal) => (
-                  <div
-                    key={goal}
-                    className="rounded-2xl border border-[#eadfd5] bg-[#fffaf5] p-4"
-                  >
-                    <span className="font-bold text-[#f05a28]">✓</span>{" "}
-                    <span className="text-slate-700">{goal}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f05a28]">
-                Learning Modules
-              </p>
-
-              <div className="mt-6 space-y-4">
-                {modules.map((module) => (
-                  <div
-                    key={module}
-                    className="rounded-2xl border border-[#eadfd5] bg-[#fffaf5] p-4"
-                  >
-                    <p className="font-semibold text-[#15172f]">{module}</p>
-
-                    <p className="mt-1 text-sm text-slate-500">
-                      Continue learning pathway
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </section>
         </section>
       </div>

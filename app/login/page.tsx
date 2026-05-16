@@ -27,7 +27,32 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("onboarding_complete")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        console.error(profileError);
+        setMessage("Could not load profile.");
+        return;
+      }
+
+      if (profile?.onboarding_complete) {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/onboarding";
+      }
     } catch (error) {
       console.error(error);
       setMessage("Something went wrong. Please try again.");
