@@ -32,7 +32,7 @@ export async function GET() {
       is_free: course.price === 0 || course.is_free === true,
       price: course.price,
       currency: course.currency ?? 'GBP',
-      url: `https://mauni.teachable.com/p/${course.slug}`,
+      url: course.slug ? `https://mauni.teachable.com/p/${course.slug}` : `https://mauni.teachable.com/p/${course.id}`,
     }))
 
     return NextResponse.json({ courses })
