@@ -1,46 +1,132 @@
-import { NextResponse } from 'next/server'
+'use client'
 
-const TEACHABLE_API_BASE = 'https://developers.teachable.com/v1'
-const TEACHABLE_API_KEY = process.env.TEACHABLE_API_KEY!
+import { useCourses, useEnrollments } from '@/hooks/useTeachable'
 
-export async function GET() {
-  try {
-    const res = await fetch(`${TEACHABLE_API_BASE}/courses`, {
-      headers: {
-        'apiKey': TEACHABLE_API_KEY,
-        'Accept': 'application/json',
-      },
-      next: { revalidate: 300 }, // cache 5 mins
-    })
+/**
+ * CourseCatalogue
+ * Drop this anywhere in KokoRoZaShi to render Teachable content.
+ * - Free courses: visible + accessible to all
+ * - Paid courses: visible to all, but locked behind auth/enrollment
+ */
+export default function CourseCatalogue() {
+  const { freeCourses, paidCourses, loading: coursesLoading } = useCourses()
+  const { isEnrolled, loading: enrollLoading } = useEnrollments()
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch courses from Teachable' },
-        { status: res.status }
-      )
-    }
+  if (coursesLoading) return <p className="text-muted">Loading courses…</p>
 
-    const data = await res.json()
+  return (
+    <div className="space-y-12">
+      {/* ── Free ── */}
+      {freeCourses.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Free Courses</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {freeCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                locked={false}
+                enrolled={false}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
-    // Normalize and flag free vs paid
-    const courses = (data.courses ?? []).map((course: any) => ({
-      id: course.id,
-      name: course.name,
-      heading: course.heading,
-      description: course.description,
-      image_url: course.image_url,
-      slug: course.slug,
-      is_published: course.is_published,
-      // Teachable uses price == 0 or is_free flag
-      is_free: course.price === 0 || course.is_free === true,
-      price: course.price,
-      currency: course.currency ?? 'GBP',
-      url: `https://mauni.teachable.com/p/${course.slug}`,
-    }))
+      {/* ── Paid ── */}
+      {paidCourses.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Premium Courses</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paidCourses.map((course) => {
+              const enrolled = !enrollLoading && isEnrolled(course.id)
+              return (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  locked={!enrolled}
+                  enrolled={enrolled}
+                />
+              )
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  )
+}
 
-    return NextResponse.json({ courses })
-  } catch (err) {
-    console.error('[Teachable] courses error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+// ─── Card ──────────────────────────────────────────────────────────────────────
+
+interface CourseCardProps {
+  course: {
+    id: number
+    name: string
+    heading: string
+    image_url: string
+    is_free: boolean
+    price: number
+    currency: string
+    url: string
   }
+  locked: boolean
+  enrolled: boolean
+}
+
+function CourseCard({ course, locked, enrolled }: CourseCardProps) {
+  const handleClick = () => {
+    if (locked) {
+      // TODO: redirect to your payment/signup flow
+      window.location.href = course.url
+    } else {
+      window.open(course.url, '_blank')
+    }
+  }
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
+      {course.image_url && (
+        <img
+          src={course.image_url}
+          alt={course.name}
+          className="w-full h-40 object-cover"
+        />
+      )}
+
+      <div className="p-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <span
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+              course.is_free
+                ? 'bg-green-100 text-green-700'
+                : 'bg-amber-100 text-amber-700'
+            }`}
+          >
+            {course.is_free ? 'Free' : `${course.currency} ${course.price}`}
+          </span>
+          {enrolled && (
+            <span className="text-xs text-blue-600 font-medium">✓ Enrolled</span>
+          )}
+        </div>
+
+        <h3 className="font-semibold text-base leading-tight">{course.name}</h3>
+        {course.heading && (
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {course.heading}
+          </p>
+        )}
+
+        <button
+          onClick={handleClick}
+          className={`w-full mt-2 py-2 rounded-lg text-sm font-medium transition-colors ${
+            locked
+              ? 'bg-muted text-muted-foreground hover:bg-muted/80'
+              : 'bg-primary text-primary-foreground hover:bg-primary/90'
+          }`}
+        >
+          {locked ? '🔒 Unlock Course' : enrolled ? 'Continue' : 'Start Course'}
+        </button>
+      </div>
+    </div>
+  )
 }
