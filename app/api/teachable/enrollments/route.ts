@@ -6,7 +6,7 @@ const TEACHABLE_API_BASE = 'https://developers.teachable.com/v1'
 const TEACHABLE_API_KEY = process.env.TEACHABLE_API_KEY!
 
 export async function GET(req: NextRequest) {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
