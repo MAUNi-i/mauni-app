@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
+import MauniAssistantWidget from "@/components/MauniAssistantWidget";
 
 type Reflection = {
   id: string;
@@ -221,6 +222,7 @@ export default function DashboardPage() {
           </section>
         </section>
       </div>
+    <MauniAssistantWidget />
     </main>
   );
 }
