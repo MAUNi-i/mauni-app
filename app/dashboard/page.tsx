@@ -64,33 +64,19 @@ export default function DashboardPage() {
             <a href="/dashboard/goals" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Goals</a>
             <a href="/dashboard/reflections" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Reflections</a>
             <a href="/learning" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Learning</a>
-            
-            <a href="https://meet.google.com/jsy-ydhn-nyx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center"
-             Join Live Session
-            </a>
+            <a href="https://meet.google.com/jsy-ydhn-nyx" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Join Live Session</a>
           </div>
         </aside>
 
         <section className="space-y-8 md:col-span-3">
           <section className="grid gap-8 rounded-3xl border border-[#eadfd5] bg-white p-8 shadow-sm md:grid-cols-2">
             <div>
-              <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">
-                MAUNi Recovery Coaching
-              </p>
-              <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f] md:text-5xl">
-                Your recovery journey continues.
-              </h1>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-                Stay connected to your goals, coaching support, learning pathways, and personal recovery capital.
-              </p>
+              <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">MAUNi Recovery Coaching</p>
+              <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f] md:text-5xl">Your recovery journey continues.</h1>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Stay connected to your goals, coaching support, learning pathways, and personal recovery capital.</p>
             </div>
             <div className="rounded-3xl border border-[#eadfd5] bg-[#fffaf5] p-6">
-              <p className="text-lg italic leading-8 text-[#15172f]">
-                "A digital space for reflection, structure, and connection — designed to support recovery between sessions."
-              </p>
+              <p className="text-lg italic leading-8 text-[#15172f]">"A digital space for reflection, structure, and connection - designed to support recovery between sessions."</p>
               <p className="mt-5 text-sm font-bold uppercase tracking-[0.2em] text-[#f05a28]">MAUNi Platform</p>
             </div>
           </section>
