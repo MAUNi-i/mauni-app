@@ -1,4 +1,5 @@
 import Image from "next/image";
+import MauniPublicChat from "@/components/MauniPublicChat";
 
 export default function Home() {
   const features = [
@@ -36,7 +37,7 @@ export default function Home() {
             <a href="#about" className="hover:text-[#f05a28]">About</a>
             <a href="#features" className="hover:text-[#f05a28]">Features</a>
             <a href="#tools" className="hover:text-[#f05a28]">Tools</a>
-            <a href="#coaching" className="hover:text-[#f05a28]">Coaching</a>
+            <a href="#coach" className="hover:text-[#f05a28]">Recovery Coach</a>
             <a href="#contact" className="hover:text-[#f05a28]">Contact</a>
           </nav>
           <a href="/signup" className="rounded-full bg-[#f05a28] px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#d94e20]">Get Started</a>
@@ -113,11 +114,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="coaching" className="px-6 py-24">
-        <div className="mx-auto max-w-7xl rounded-3xl border border-[#eadfd5] bg-[#fffaf5] p-8 shadow-sm md:p-12">
-          <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-[#f05a28]">Recovery Coaching</p>
-          <h2 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-[#15172f] md:text-5xl">Recovery support should be accessible, human, practical, and connected.</h2>
-          <p className="mt-6 max-w-3xl text-lg leading-9 text-slate-600">MAUNi is built to support the coaching relationship by creating structure, visibility, and continuity between sessions.</p>
+      <section id="coach" className="bg-[#fff7f0] px-6 py-24">
+        <div className="mx-auto max-w-3xl">
+          <p className="mb-4 text-center text-sm font-bold uppercase tracking-[0.35em] text-[#f05a28]">Recovery Coach</p>
+          <h2 className="mb-3 text-center text-4xl font-semibold tracking-tight text-[#15172f]">Ask the MAUNi Recovery Coach.</h2>
+          <p className="mb-10 text-center text-lg leading-8 text-slate-600">Available 24/7. Trained in the MAUNi methodology. Ask about recovery, referrals, or finding the right pathway.</p>
+          <MauniPublicChat />
         </div>
       </section>
 
@@ -137,7 +139,7 @@ export default function Home() {
             <a href="#about" className="hover:text-[#f05a28]">About</a>
             <a href="#features" className="hover:text-[#f05a28]">Features</a>
             <a href="#tools" className="hover:text-[#f05a28]">Tools</a>
-            <a href="#coaching" className="hover:text-[#f05a28]">Coaching</a>
+            <a href="#coach" className="hover:text-[#f05a28]">Recovery Coach</a>
           </div>
         </div>
       </footer>
