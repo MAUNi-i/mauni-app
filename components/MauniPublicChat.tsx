@@ -7,11 +7,11 @@ type Message = {
   content: string;
 };
 
-const PROMPTS = [
-  "What is recovery coaching?",
-  "What is recovery capital?",
-  "How does the CPRC programme work?",
-  "Tell me about the Ubuntu methodology",
+const QUICK_REPLIES = [
+  "What is the Collins Window?",
+  "What are the 3 Cs and 3 As?",
+  "Explain recovery capital",
+  "What is HALTS?",
   "How do I make a referral?",
   "What is lived experience in recovery?",
 ];
@@ -19,38 +19,31 @@ const PROMPTS = [
 function linkify(text: string) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
-  return parts.map((part, i) => {
-    if (/(https?:\/\/[^\s]+)/.test(part)) {
-      return (
-        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-[#f05a28] underline break-all hover:text-[#d94e20]">
-          {part}
-        </a>
-      );
-    }
-    return part;
-  });
+  return parts.map((part, i) =>
+    /(https?:\/\/[^\s]+)/.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#E8632A", textDecoration: "underline", wordBreak: "break-all" }}>
+        {part}
+      </a>
+    ) : part
+  );
 }
 
 export default function MauniPublicChat() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Hi, I'm the MAUNi Recovery Coach. I'm available 24/7 to answer questions about recovery, coaching pathways, and our programmes. How can I help you today?",
-    },
+    { role: "assistant", content: "Welcome to MAUNi. Ask me about the MAUNi recovery methodology, referrals, coaching pathways, or our programmes." },
   ]);
   const [loading, setLoading] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const msgsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
   }, [messages, loading]);
 
   async function sendMessage(text?: string) {
     const userMessage = text || input;
-    if (!userMessage.trim()) return;
-    setMessages((current) => [...current, { role: "user", content: userMessage }]);
+    if (!userMessage.trim() || loading) return;
+    setMessages((c) => [...c, { role: "user", content: userMessage }]);
     setInput("");
     setLoading(true);
     try {
@@ -60,97 +53,102 @@ export default function MauniPublicChat() {
         body: JSON.stringify({ message: userMessage, assistant: "recovery" }),
       });
       const data = await response.json();
-      setMessages((current) => [...current, {
-        role: "assistant",
-        content: response.ok ? data.reply : (data.error || "Something went wrong."),
-      }]);
+      setMessages((c) => [...c, { role: "assistant", content: response.ok ? data.reply : (data.error || "Something went wrong.") }]);
     } catch {
-      setMessages((current) => [...current, {
-        role: "assistant",
-        content: "I could not connect right now. Please try again.",
-      }]);
+      setMessages((c) => [...c, { role: "assistant", content: "I could not connect right now. Please try again or contact david@uact.co.uk directly." }]);
     } finally {
       setLoading(false);
     }
   }
 
+  const styles: Record<string, React.CSSProperties> = {
+    card: { maxWidth: 680, background: "white", border: "0.5px solid #E5E7EB", borderRadius: 12, padding: 24, boxShadow: "0 4px 24px rgba(0,0,0,0.06)", fontFamily: "'Nunito', sans-serif" },
+    disclaimer: { fontSize: 12, lineHeight: 1.7, color: "#6B7280", background: "#F8FAFB", border: "0.5px solid #E5E7EB", borderRadius: 8, padding: "10px 14px", marginBottom: 16 },
+    quickPrompts: { display: "flex", flexWrap: "wrap" as const, gap: 8, marginBottom: 16 },
+    qrBtn: { fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, padding: "6px 12px", border: "0.5px solid #E5E7EB", borderRadius: 20, background: "white", color: "#1A1A2E", cursor: "pointer" },
+    chat: { minHeight: 120, maxHeight: 280, overflowY: "auto" as const, marginBottom: 12, display: "flex", flexDirection: "column" as const, gap: 10 },
+    msgWrapper: { display: "flex", gap: 10, alignItems: "flex-start" },
+    msgWrapperUser: { display: "flex", flexDirection: "row-reverse" as const, gap: 10, alignItems: "flex-start" },
+    avatar: { width: 30, height: 30, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#1A1A2E", display: "flex", alignItems: "center", justifyContent: "center" },
+    avatarUser: { width: 30, height: 30, borderRadius: "50%", flexShrink: 0, background: "#E8632A", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 11, fontWeight: 700 },
+    bubbleAssistant: { background: "#F8FAFB", border: "1px solid #E5E7EB", borderRadius: "4px 14px 14px 14px", padding: "10px 14px", fontSize: 13, lineHeight: 1.7, color: "#1A1A2E", maxWidth: "82%" },
+    bubbleUser: { background: "#1A1A2E", border: "1px solid #1A1A2E", borderRadius: "14px 4px 14px 14px", padding: "10px 14px", fontSize: 13, lineHeight: 1.7, color: "white", maxWidth: "82%" },
+    textarea: { width: "100%", fontFamily: "'Nunito', sans-serif", fontSize: 13, color: "#1A1A2E", border: "0.5px solid #E5E7EB", borderRadius: 8, padding: "10px 12px", resize: "none" as const, outline: "none", background: "#F8FAFB", lineHeight: 1.5, minHeight: 60, marginBottom: 10 },
+    sendRow: { display: "flex", flexWrap: "wrap" as const, gap: 8, alignItems: "center" },
+    sendBtn: { fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, padding: "8px 14px", border: "0.5px solid #E8632A", borderRadius: 6, background: "#E8632A", color: "white", cursor: "pointer" },
+    speakBtn: { fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, padding: "8px 14px", border: "0.5px solid #E5E7EB", borderRadius: 6, background: "white", color: "#1A1A2E", cursor: "pointer" },
+  };
+
   function speakLast() {
-    const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
-    if (!lastAssistant || !window.speechSynthesis) return;
+    const last = [...messages].reverse().find(m => m.role === "assistant");
+    if (!last || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    if (speaking) { setSpeaking(false); return; }
-    const utterance = new SpeechSynthesisUtterance(lastAssistant.content);
-    utterance.lang = "en-GB";
-    utterance.rate = 0.95;
-    utterance.onend = () => setSpeaking(false);
-    setSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    const u = new SpeechSynthesisUtterance(last.content);
+    u.lang = "en-GB";
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
   }
 
   return (
-    <div className="rounded-3xl border border-[#eadfd5] bg-white shadow-sm overflow-hidden">
-      <div className="bg-[#f05a28] px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white font-bold text-lg">M</div>
-          <div>
-            <p className="font-bold text-white">MAUNi Recovery Coach</p>
-            <p className="text-xs text-white/80">Available 24/7 · Trained in MAUNi methodology</p>
-          </div>
-          <div className="ml-auto flex items-center gap-3">
-            <button onClick={speakLast} className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs text-white hover:bg-white/30 transition-colors">
-              {speaking ? "Stop" : "Speak"}
-            </button>
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-green-400" />
-              <span className="text-xs text-white/80">Online</span>
-            </div>
-          </div>
-        </div>
+    <div style={styles.card}>
+      <div style={styles.disclaimer}>
+        Please do not enter names, addresses, phone numbers, medical records, or identifiable personal information. This assistant supports learning and reflection. It does not provide medical, legal, clinical, safeguarding, or emergency advice.
       </div>
 
-      <div className="border-b border-[#eadfd5] bg-[#fff7f0] px-5 py-3">
-        <p className="text-xs text-slate-500 leading-5">This assistant supports learning and reflection. It does not provide medical, legal, clinical, safeguarding, or emergency advice. Do not enter personal or identifiable information.</p>
-      </div>
-
-      <div className="h-[380px] overflow-y-auto bg-[#f8f5ef] p-4 space-y-3">
-        {messages.map((message, index) => (
-          <div key={index} className={message.role === "user"
-            ? "ml-auto max-w-[85%] rounded-2xl bg-[#f05a28] p-3 text-sm leading-6 text-white"
-            : "mr-auto max-w-[85%] rounded-2xl border border-[#eadfd5] bg-white p-3 text-sm leading-6 text-slate-700"
-          }>
-            {message.role === "assistant" && (
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#f05a28] mb-1">MAUNi Recovery Coach</p>
-            )}
-            <span>{message.role === "assistant" ? linkify(message.content) : message.content}</span>
-          </div>
-        ))}
-        {loading && (
-          <div className="mr-auto max-w-[85%] rounded-2xl border border-[#eadfd5] bg-white p-3 text-sm text-slate-500">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#f05a28] mb-1">MAUNi Recovery Coach</p>
-            Thinking...
-          </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
-
-      <div className="border-t border-[#eadfd5] bg-[#fffaf5] px-4 py-3 flex gap-2 flex-wrap">
-        {PROMPTS.map((prompt) => (
-          <button key={prompt} onClick={() => sendMessage(prompt)} disabled={loading} className="rounded-full border border-[#eadfd5] bg-white px-3 py-1.5 text-xs text-slate-600 hover:border-[#f05a28] hover:text-[#f05a28] transition-colors disabled:opacity-50">
-            {prompt}
+      <div style={styles.quickPrompts}>
+        {QUICK_REPLIES.map((q) => (
+          <button key={q} style={styles.qrBtn} onClick={() => sendMessage(q)} disabled={loading}
+            onMouseEnter={e => { (e.target as HTMLButtonElement).style.borderColor = "#E8632A"; (e.target as HTMLButtonElement).style.color = "#E8632A"; }}
+            onMouseLeave={e => { (e.target as HTMLButtonElement).style.borderColor = "#E5E7EB"; (e.target as HTMLButtonElement).style.color = "#1A1A2E"; }}>
+            {q}
           </button>
         ))}
       </div>
 
-      <div className="flex gap-2 border-t border-[#eadfd5] bg-white p-3">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
-          placeholder="Ask the MAUNi Recovery Coach..."
-          className="flex-1 rounded-xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-sm outline-none focus:border-[#f05a28]"
-        />
-        <button onClick={() => sendMessage()} disabled={loading || !input.trim()} className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60 hover:bg-[#d94e20]">
-          Send
+      <div style={styles.chat} ref={msgsRef}>
+        {messages.map((msg, i) => (
+          <div key={i} style={msg.role === "user" ? styles.msgWrapperUser : styles.msgWrapper}>
+            {msg.role === "assistant" ? (
+              <div style={styles.avatar}>
+                <img src="https://mauni.app/wp-content/uploads/2023/03/cropped-m-270x270.jpg" alt="MAUNi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            ) : (
+              <div style={styles.avatarUser}>You</div>
+            )}
+            <div style={msg.role === "user" ? styles.bubbleUser : styles.bubbleAssistant}>
+              {msg.role === "assistant" ? (
+                <><span style={{ color: "#E8632A", fontWeight: 700 }}>MAUNi Recovery Coach: </span>{linkify(msg.content)}</>
+              ) : msg.content}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div style={styles.msgWrapper}>
+            <div style={styles.avatar}>
+              <img src="https://mauni.app/wp-content/uploads/2023/03/cropped-m-270x270.jpg" alt="MAUNi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+            <div style={styles.bubbleAssistant}>
+              <span style={{ color: "#E8632A", fontWeight: 700 }}>MAUNi Recovery Coach: </span>Thinking...
+            </div>
+          </div>
+        )}
+      </div>
+
+      <textarea
+        style={styles.textarea}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+        placeholder="Ask the MAUNi Recovery Coach..."
+        rows={2}
+      />
+
+      <div style={styles.sendRow}>
+        <button style={styles.sendBtn} onClick={() => sendMessage()} disabled={loading}>
+          {loading ? "Sending..." : "Send"}
+        </button>
+        <button style={styles.speakBtn} onClick={speakLast}>
+          Speak
         </button>
       </div>
     </div>
