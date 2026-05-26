@@ -19,7 +19,7 @@ export async function GET(
       course_sections (
         id, title, position,
         lectures (
-          id, title, position, youtube_video_id, cloudflare_video_id, duration_seconds, is_published
+          id, title, position, youtube_video_id, cloudflare_video_id, duration_seconds, is_published, description
         )
       )
     `)
