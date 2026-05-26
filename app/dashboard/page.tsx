@@ -149,7 +149,7 @@ export default function DashboardPage() {
             </a>
 
             <a
-              href="/dashboard/learning"
+              href="/learning"
               className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]"
             >
               Learning
