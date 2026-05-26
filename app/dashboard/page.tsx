@@ -154,7 +154,21 @@ export default function DashboardPage() {
             >
               Learning
             </a>
-          </div>
+href="https://meet.google.com/jsy-ydhn-nyx"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center"
+>
+  🎥 Join Live Session
+</a>href="https://meet.google.com/jsy-ydhn-nyx"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center"
+>
+  🎥 Join Live Session
+</a>         
+
+ </div>
         </aside>
 
         <section className="space-y-8 md:col-span-3">
