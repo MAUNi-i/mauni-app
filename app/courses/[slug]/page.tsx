@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -12,6 +11,7 @@ interface Lecture {
   youtube_video_id: string | null;
   cloudflare_video_id: string | null;
   is_published: boolean;
+  description: string | null;
 }
 
 interface Section {
@@ -40,7 +40,6 @@ export default function CoursePlayerPage() {
     async function init() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = "/login"; return; }
-
       const res = await fetch(`/api/courses/${slug}`);
       const data = await res.json();
       if (data.course) {
@@ -117,7 +116,10 @@ export default function CoursePlayerPage() {
 
               <div className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28] mb-2">Now Playing</p>
-                <h2 className="text-2xl font-bold text-[#15172f]">{activeLecture.title}</h2>
+                <h2 className="text-2xl font-bold text-[#15172f] mb-3">{activeLecture.title}</h2>
+                {activeLecture.description && (
+                  <p className="text-base leading-8 text-slate-600">{activeLecture.description}</p>
+                )}
               </div>
             </div>
           ) : (
