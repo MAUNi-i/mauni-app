@@ -9,10 +9,27 @@ type Message = {
 
 const PROMPTS = [
   "What is recovery coaching?",
-  "How does the CPRC programme work?",
   "What is recovery capital?",
+  "How does the CPRC programme work?",
   "Tell me about the Ubuntu methodology",
+  "How do I make a referral?",
+  "What is lived experience in recovery?",
 ];
+
+function linkify(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) => {
+    if (/(https?:\/\/[^\s]+)/.test(part)) {
+      return (
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-[#f05a28] underline break-all hover:text-[#d94e20]">
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
 
 export default function MauniPublicChat() {
   const [input, setInput] = useState("");
@@ -23,6 +40,7 @@ export default function MauniPublicChat() {
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,6 +74,19 @@ export default function MauniPublicChat() {
     }
   }
 
+  function speakLast() {
+    const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+    if (!lastAssistant || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    if (speaking) { setSpeaking(false); return; }
+    const utterance = new SpeechSynthesisUtterance(lastAssistant.content);
+    utterance.lang = "en-GB";
+    utterance.rate = 0.95;
+    utterance.onend = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  }
+
   return (
     <div className="rounded-3xl border border-[#eadfd5] bg-white shadow-sm overflow-hidden">
       <div className="bg-[#f05a28] px-6 py-5">
@@ -65,22 +96,32 @@ export default function MauniPublicChat() {
             <p className="font-bold text-white">MAUNi Recovery Coach</p>
             <p className="text-xs text-white/80">Available 24/7 · Trained in MAUNi methodology</p>
           </div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-green-400" />
-            <span className="text-xs text-white/80">Online</span>
+          <div className="ml-auto flex items-center gap-3">
+            <button onClick={speakLast} className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs text-white hover:bg-white/30 transition-colors">
+              {speaking ? "Stop" : "Speak"}
+            </button>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-green-400" />
+              <span className="text-xs text-white/80">Online</span>
+            </div>
           </div>
         </div>
       </div>
+
       <div className="border-b border-[#eadfd5] bg-[#fff7f0] px-5 py-3">
         <p className="text-xs text-slate-500 leading-5">This assistant supports learning and reflection. It does not provide medical, legal, clinical, safeguarding, or emergency advice. Do not enter personal or identifiable information.</p>
       </div>
+
       <div className="h-[380px] overflow-y-auto bg-[#f8f5ef] p-4 space-y-3">
         {messages.map((message, index) => (
-          <div key={index} className={message.role === "user" ? "ml-auto max-w-[85%] rounded-2xl bg-[#f05a28] p-3 text-sm leading-6 text-white" : "mr-auto max-w-[85%] rounded-2xl border border-[#eadfd5] bg-white p-3 text-sm leading-6 text-slate-700"}>
+          <div key={index} className={message.role === "user"
+            ? "ml-auto max-w-[85%] rounded-2xl bg-[#f05a28] p-3 text-sm leading-6 text-white"
+            : "mr-auto max-w-[85%] rounded-2xl border border-[#eadfd5] bg-white p-3 text-sm leading-6 text-slate-700"
+          }>
             {message.role === "assistant" && (
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#f05a28] mb-1">MAUNi Recovery Coach</p>
             )}
-            {message.content}
+            <span>{message.role === "assistant" ? linkify(message.content) : message.content}</span>
           </div>
         ))}
         {loading && (
@@ -91,6 +132,7 @@ export default function MauniPublicChat() {
         )}
         <div ref={bottomRef} />
       </div>
+
       <div className="border-t border-[#eadfd5] bg-[#fffaf5] px-4 py-3 flex gap-2 flex-wrap">
         {PROMPTS.map((prompt) => (
           <button key={prompt} onClick={() => sendMessage(prompt)} disabled={loading} className="rounded-full border border-[#eadfd5] bg-white px-3 py-1.5 text-xs text-slate-600 hover:border-[#f05a28] hover:text-[#f05a28] transition-colors disabled:opacity-50">
@@ -98,9 +140,18 @@ export default function MauniPublicChat() {
           </button>
         ))}
       </div>
+
       <div className="flex gap-2 border-t border-[#eadfd5] bg-white p-3">
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }} placeholder="Ask the MAUNi Recovery Coach..." className="flex-1 rounded-xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-sm outline-none focus:border-[#f05a28]" />
-        <button onClick={() => sendMessage()} disabled={loading || !input.trim()} className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60 hover:bg-[#d94e20]">Send</button>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
+          placeholder="Ask the MAUNi Recovery Coach..."
+          className="flex-1 rounded-xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-sm outline-none focus:border-[#f05a28]"
+        />
+        <button onClick={() => sendMessage()} disabled={loading || !input.trim()} className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60 hover:bg-[#d94e20]">
+          Send
+        </button>
       </div>
     </div>
   );
