@@ -188,7 +188,7 @@ export default function LearningPage() {
                     )}
 
                     <a
-                      href={`/courses/${course.slug}`}
+                      href={course.id === 2822126 ? `/courses/uactlero` : course.id === 2788685 ? `/courses/recovery-wellness-program` : course.id === 2822819 ? `/courses/we-do-recovery` : course.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]"
