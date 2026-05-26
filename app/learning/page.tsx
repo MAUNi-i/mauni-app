@@ -188,7 +188,7 @@ export default function LearningPage() {
                     )}
 
                     <a
-                      href={course.url}
+                      href={`/courses/${course.slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]"
