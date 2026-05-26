@@ -8,8 +8,10 @@ const supabase = createClient(
 
 export async function GET(
   _req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params
+
   const { data, error } = await supabase
     .from('courses')
     .select(`
@@ -21,7 +23,7 @@ export async function GET(
         )
       )
     `)
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('is_published', true)
     .single()
 
