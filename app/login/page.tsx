@@ -32,7 +32,7 @@ export default function LoginPage() {
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: "https://app.mauni-tech.com/dashboard" },
+      options: { redirectTo: `${window.location.origin}/dashboard` },
     });
   }
 
