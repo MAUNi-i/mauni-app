@@ -83,6 +83,14 @@ export default function LearningPage() {
                 {item.label}
               </a>
             ))}
+            <a
+              href="https://meet.google.com/jsy-ydhn-nyx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-center font-semibold text-[#f05a28] hover:bg-[#f05a28] hover:text-white transition-colors"
+            >
+              Join Live Session
+            </a>
           </div>
         </aside>
 
