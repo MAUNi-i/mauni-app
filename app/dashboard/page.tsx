@@ -5,99 +5,157 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import MauniAssistantWidget from "@/components/MauniAssistantWidget";
 
-type Reflection = {
-  id: string;
-  message: string;
-  reply: string;
-  created_at: string;
+type Reflection = { id: string; message: string; reply: string; created_at: string; };
+
+const THEMES: Record<string, {
+  primary: string; primaryHover: string; primaryLight: string; primaryBorder: string;
+  bg: string; cardBg: string; accentBg: string;
+  logo: string | null; logoAlt: string; orgName: string; orgSub: string;
+  font: string;
+}> = {
+  "app.maunirecoverconnections.com": {
+    primary: "#0f2a7a", primaryHover: "#1a3d9e", primaryLight: "#e8eef8", primaryBorder: "#c5d0e8",
+    bg: "#f5f7fb", cardBg: "#ffffff", accentBg: "#e8eef8",
+    logo: "https://recoveryconnections.org.uk/wp-content/uploads/2025/02/recovery-connections-logo.svg",
+    logoAlt: "Recovery Connections", orgName: "Recovery Connections", orgSub: "Powered by MAUNi",
+    font: "'Nunito', sans-serif",
+  },
+  default: {
+    primary: "#f05a28", primaryHover: "#d94e20", primaryLight: "#fff7f0", primaryBorder: "#eadfd5",
+    bg: "#f8f5ef", cardBg: "#ffffff", accentBg: "#fffaf5",
+    logo: null, logoAlt: "MAUNi", orgName: "MAUNi", orgSub: "Recovery coaching dashboard",
+    font: "inherit",
+  },
 };
 
 export default function DashboardPage() {
   const [reflections, setReflections] = useState<Reflection[]>([]);
+  const [theme, setTheme] = useState(THEMES.default);
 
   useEffect(() => {
+    const host = window.location.hostname;
+    const t = THEMES[host] ?? THEMES.default;
+    setTheme(t);
+
+    if (t.font !== "inherit") {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap";
+      document.head.appendChild(link);
+    }
+
     async function checkUserAndLoadReflections() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = "/login"; return; }
-
-      const { data } = await supabase
-        .from("reflections")
-        .select("id, message, reply, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(5);
-
+      const { data } = await supabase.from("reflections").select("id, message, reply, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5);
       setReflections(data || []);
     }
     checkUserAndLoadReflections();
   }, []);
 
+  const t = theme;
+  const p = t.primary;
+  const pl = t.primaryLight;
+  const pb = t.primaryBorder;
+
   return (
-    <main className="min-h-screen bg-[#f8f5ef] text-[#111827]">
-      <header className="border-b border-[#eadfd5] bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <a href="/" className="flex items-center gap-3">
-            <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-white">
-              <Image src="/mauni-m.jpg" alt="MAUNi logo" fill className="object-contain p-1" priority />
-            </div>
-            <div>
-              <p className="text-lg font-bold tracking-tight">MAUNi <span className="text-[#f05a28]">Platform</span></p>
-              <p className="text-sm text-slate-500">Recovery coaching dashboard</p>
-            </div>
+    <main style={{ minHeight: "100vh", background: t.bg, color: "#111827", fontFamily: t.font }}>
+
+      {/* HEADER */}
+      <header style={{ borderBottom: `1px solid ${pb}`, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.5rem" }}>
+          <a href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "inherit" }}>
+            {t.logo ? (
+              <img src={t.logo} alt={t.logoAlt} style={{ height: 40 }} />
+            ) : (
+              <>
+                <div style={{ position: "relative", height: 48, width: 48, overflow: "hidden", borderRadius: 12, background: "white" }}>
+                  <Image src="/mauni-m.jpg" alt="MAUNi logo" fill style={{ objectFit: "contain", padding: 4 }} priority />
+                </div>
+                <div>
+                  <p style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em" }}>MAUNi <span style={{ color: p }}>Platform</span></p>
+                  <p style={{ fontSize: 13, color: "#64748b" }}>{t.orgSub}</p>
+                </div>
+              </>
+            )}
+            {t.logo && <div style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>{t.orgSub}</div>}
           </a>
           <button
             onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
-            className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#d94e20]"
-          >
-            Logout
-          </button>
+            style={{ background: p, color: "white", border: "none", borderRadius: 10, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: t.font }}
+          >Logout</button>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-4">
-        <aside className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm md:col-span-1">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f05a28]">Navigation</p>
-          <div className="mt-6 space-y-3">
-            <a href="/dashboard" className="block rounded-2xl bg-[#f05a28] px-4 py-3 font-semibold text-white">Dashboard</a>
-            <a href="/dashboard/journal" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Journal</a>
-            <a href="/dashboard/timeline" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Timeline</a>
-            <a href="/dashboard/goals" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Goals</a>
-            <a href="/dashboard/reflections" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Reflections</a>
-            <a href="/learning" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Learning</a>
-            <a href="https://meet.google.com/jsy-ydhn-nyx" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Join Live Session</a>
-            <a href="https://meet.google.com/eux-tpuw-ghk" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Case Management</a>
-            <a href="https://www.skool.com/london-recovery-coaching" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Community</a>
+      <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "260px 1fr", gap: "2rem", padding: "2.5rem 1.5rem" }}>
+
+        {/* SIDEBAR */}
+        <aside style={{ background: t.cardBg, borderRadius: 20, border: `1px solid ${pb}`, padding: "1.5rem", alignSelf: "start" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: p, marginBottom: "1.25rem" }}>Navigation</p>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+            {[
+              { label: "Dashboard", href: "/dashboard", active: true },
+              { label: "Journal", href: "/dashboard/journal" },
+              { label: "Timeline", href: "/dashboard/timeline" },
+              { label: "Goals", href: "/dashboard/goals" },
+              { label: "Reflections", href: "/dashboard/reflections" },
+              { label: "Learning", href: "/learning" },
+            ].map(item => (
+              <a key={item.label} href={item.href} style={{
+                display: "block", borderRadius: 10, padding: "10px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none",
+                background: item.active ? p : t.accentBg,
+                color: item.active ? "white" : "#374151",
+                border: item.active ? "none" : `1px solid ${pb}`,
+              }}>{item.label}</a>
+            ))}
+            {[
+              { label: "Join Live Session", href: "https://meet.google.com/jsy-ydhn-nyx" },
+              { label: "Case Management", href: "https://meet.google.com/eux-tpuw-ghk" },
+              { label: "Community", href: "https://www.skool.com/london-recovery-coaching" },
+            ].map(item => (
+              <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" style={{
+                display: "block", borderRadius: 10, padding: "10px 14px", fontSize: 14, fontWeight: 700, textDecoration: "none", textAlign: "center" as const,
+                background: pl, color: p, border: `1px solid ${pb}`,
+              }}>{item.label}</a>
+            ))}
           </div>
         </aside>
 
-        <section className="space-y-8 md:col-span-3">
-          <section className="grid gap-8 rounded-3xl border border-[#eadfd5] bg-white p-8 shadow-sm md:grid-cols-2">
-            <div>
-              <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">MAUNi Recovery Coaching</p>
-              <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f] md:text-5xl">Your recovery journey continues.</h1>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Stay connected to your goals, coaching support, learning pathways, and personal recovery capital.</p>
-            </div>
-            <div className="rounded-3xl border border-[#eadfd5] bg-[#fffaf5] p-6">
-              <p className="text-lg italic leading-8 text-[#15172f]">"A digital space for reflection, structure, and connection - designed to support recovery between sessions."</p>
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.2em] text-[#f05a28]">MAUNi Platform</p>
-            </div>
-          </section>
+        {/* MAIN */}
+        <section style={{ display: "flex", flexDirection: "column" as const, gap: "1.5rem" }}>
 
-          <section className="grid gap-6 md:grid-cols-3">
+          {/* HERO CARD */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", background: t.cardBg, borderRadius: 20, border: `1px solid ${pb}`, padding: "2rem" }}>
+            <div>
+              <span style={{ display: "inline-flex", borderRadius: 100, border: `1px solid ${p}30`, background: pl, padding: "6px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: p, marginBottom: "1rem" }}>
+                {t.orgName} Recovery Coaching
+              </span>
+              <h1 style={{ fontSize: "clamp(1.8rem,3vw,2.6rem)", fontWeight: 700, lineHeight: 1.2, color: "#111827", marginBottom: "1rem" }}>Your recovery journey continues.</h1>
+              <p style={{ fontSize: 16, lineHeight: 1.75, color: "#64748b" }}>Stay connected to your goals, coaching support, learning pathways, and personal recovery capital.</p>
+            </div>
+            <div style={{ background: t.accentBg, borderRadius: 14, border: `1px solid ${pb}`, padding: "1.5rem", display: "flex", flexDirection: "column" as const, justifyContent: "space-between" }}>
+              <p style={{ fontSize: 15, fontStyle: "italic", lineHeight: 1.75, color: "#111827" }}>"A digital space for reflection, structure, and connection — designed to support recovery between sessions."</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: p, marginTop: "1rem" }}>{t.orgName}</p>
+            </div>
+          </div>
+
+          {/* STATS */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
             {[
               { label: "Recovery Goals", value: "3", text: "Active recovery goals in progress." },
               { label: "Reflections", value: String(reflections.length), text: "Recent saved reflections." },
               { label: "Learning", value: "3", text: "Learning modules available." },
-            ].map((card) => (
-              <div key={card.label} className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">{card.label}</p>
-                <h2 className="mt-4 text-4xl font-bold text-[#15172f]">{card.value}</h2>
-                <p className="mt-3 leading-7 text-slate-600">{card.text}</p>
+            ].map(card => (
+              <div key={card.label} style={{ background: t.cardBg, borderRadius: 20, border: `1px solid ${pb}`, padding: "1.5rem" }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: p }}>{card.label}</p>
+                <h2 style={{ fontSize: 40, fontWeight: 700, color: "#111827", margin: "0.75rem 0 0.5rem" }}>{card.value}</h2>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: "#64748b" }}>{card.text}</p>
               </div>
             ))}
-          </section>
+          </div>
         </section>
       </div>
+
       <MauniAssistantWidget />
     </main>
   );
