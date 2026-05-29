@@ -66,6 +66,7 @@ export default function DashboardPage() {
             <a href="/learning" className="block rounded-2xl border border-[#eadfd5] bg-[#fffaf5] px-4 py-3 text-slate-700 hover:border-[#f05a28]">Learning</a>
             <a href="https://meet.google.com/jsy-ydhn-nyx" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Join Live Session</a>
             <a href="https://meet.google.com/eux-tpuw-ghk" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Case Management</a>
+            <a href="https://www.skool.com/london-recovery-coaching" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-[#f05a28] font-semibold hover:bg-[#f05a28] hover:text-white transition-colors text-center">Community</a>
           </div>
         </aside>
 
