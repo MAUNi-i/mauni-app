@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 type Message = {
   role: "user" | "assistant";
@@ -16,16 +16,75 @@ const QUICK_REPLIES = [
   "What is lived experience in recovery?",
 ];
 
-function linkify(text: string) {
+function renderMarkdown(text: string) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
-  return parts.map((part, i) =>
-    /(https?:\/\/[^\s]+)/.test(part) ? (
-      <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#E8632A", textDecoration: "underline", wordBreak: "break-all" }}>
-        {part}
-      </a>
-    ) : part
-  );
+
+  function renderInline(str: string): React.ReactNode[] {
+    // Bold: **text**
+    const boldRegex = /\*\*(.+?)\*\*/g;
+    const parts: React.ReactNode[] = [];
+    let last = 0;
+    let match;
+    while ((match = boldRegex.exec(str)) !== null) {
+      if (match.index > last) parts.push(str.slice(last, match.index));
+      parts.push(<strong key={match.index}>{match[1]}</strong>);
+      last = match.index + match[0].length;
+    }
+    if (last < str.length) parts.push(str.slice(last));
+
+    // Linkify within inline parts
+    return parts.flatMap((part, pi) => {
+      if (typeof part !== "string") return [part];
+      const linkParts = part.split(urlRegex);
+      return linkParts.map((lp, li) =>
+        urlRegex.test(lp) ? (
+          <a key={`${pi}-${li}`} href={lp} target="_blank" rel="noopener noreferrer"
+            style={{ color: "#E8632A", textDecoration: "underline", wordBreak: "break-all" }}>
+            {lp}
+          </a>
+        ) : lp
+      );
+    });
+  }
+
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trim() === "") {
+      elements.push(<br key={`br-${i}`} />);
+    } else if (/^\d+\.\s/.test(line)) {
+      // Numbered list
+      const listItems: React.ReactNode[] = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        listItems.push(<li key={i} style={{ marginBottom: 2 }}>{renderInline(lines[i].replace(/^\d+\.\s/, ""))}</li>);
+        i++;
+      }
+      elements.push(<ol key={`ol-${i}`} style={{ paddingLeft: 20, margin: "6px 0" }}>{listItems}</ol>);
+      continue;
+    } else if (/^[-•]\s/.test(line)) {
+      // Bullet list
+      const listItems: React.ReactNode[] = [];
+      while (i < lines.length && /^[-•]\s/.test(lines[i])) {
+        listItems.push(<li key={i} style={{ marginBottom: 2 }}>{renderInline(lines[i].replace(/^[-•]\s/, ""))}</li>);
+        i++;
+      }
+      elements.push(<ul key={`ul-${i}`} style={{ paddingLeft: 20, margin: "6px 0" }}>{listItems}</ul>);
+      continue;
+    } else {
+      elements.push(<p key={i} style={{ margin: "4px 0", lineHeight: 1.6 }}>{renderInline(line)}</p>);
+    }
+    i++;
+  }
+
+  return <>{elements}</>;
+}
+
+// Keep for backward compat
+function linkify(text: string) {
+  return renderMarkdown(text);
 }
 
 export default function MauniPublicChat() {
@@ -117,7 +176,7 @@ export default function MauniPublicChat() {
             )}
             <div style={msg.role === "user" ? styles.bubbleUser : styles.bubbleAssistant}>
               {msg.role === "assistant" ? (
-                <><span style={{ color: "#E8632A", fontWeight: 700 }}>MAUNi Recovery Coach: </span>{linkify(msg.content)}</>
+                <><span style={{ color: "#E8632A", fontWeight: 700 }}>MAUNi Recovery Coach: </span>{renderMarkdown(msg.content)}</>
               ) : msg.content}
             </div>
           </div>
