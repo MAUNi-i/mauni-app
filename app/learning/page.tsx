@@ -92,7 +92,7 @@ export default function LearningPage() {
               { label: "Learning", href: "/learning", active: true },
             ].map((item) => (
               
-                <
+                <a
                   key={item.href}
                 href={item.href}
                 className={`block rounded-2xl px-4 py-3 font-semibold ${
