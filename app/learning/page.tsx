@@ -38,6 +38,15 @@ const CPD_MODULES = [
 
 const ALLOWED_COURSE_IDS = [2822126];
 
+const NAV_ITEMS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Journal", href: "/dashboard/journal" },
+  { label: "Timeline", href: "/dashboard/timeline" },
+  { label: "Goals", href: "/dashboard/goals" },
+  { label: "Reflections", href: "/dashboard/reflections" },
+  { label: "Learning", href: "/learning", active: true },
+];
+
 export default function LearningPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,38 +68,51 @@ export default function LearningPage() {
 
   return (
     <main className="min-h-screen bg-[#f8f5ef] text-[#111827]">
-      <header className="border-b border-[#eadfd5] bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+
+      {/* HEADER */}
+      <header className="border-b border-[#eadfd5] bg-white/90 backdrop-blur sticky top-0 z-50">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6 md:py-5">
           <a href="/" className="flex items-center gap-3">
-            <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-white">
+            <div className="relative h-10 w-10 md:h-12 md:w-12 overflow-hidden rounded-xl bg-white flex-shrink-0">
               <Image src="/mauni-m.jpg" alt="MAUNi logo" fill className="object-contain p-1" priority />
             </div>
-            <div>
+            <div className="hidden sm:block">
               <p className="text-lg font-bold tracking-tight">MAUNi <span className="text-[#f05a28]">Platform</span></p>
               <p className="text-sm text-slate-500">Recovery coaching dashboard</p>
             </div>
+            <p className="sm:hidden text-base font-bold tracking-tight">MAUNi <span className="text-[#f05a28]">Platform</span></p>
           </a>
           <button
             onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
-            className="rounded-xl bg-[#f05a28] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#d94e20]"
+            className="rounded-xl bg-[#f05a28] px-4 py-2.5 md:px-5 md:py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#d94e20]"
           >
             Logout
           </button>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-4">
-        <aside className="rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm md:col-span-1">
+      {/* MOBILE NAV — horizontal scroll pills, hidden on md+ */}
+      <nav className="flex md:hidden overflow-x-auto gap-2 px-4 py-3 bg-white border-b border-[#eadfd5] scrollbar-none" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}>
+        {NAV_ITEMS.map(item => (
+          <a key={item.href} href={item.href} className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-bold whitespace-nowrap border ${item.active ? "bg-[#f05a28] text-white border-[#f05a28]" : "bg-[#fff7f0] text-[#f05a28] border-[#eadfd5]"}`}>
+            {item.label}
+          </a>
+        ))}
+        <a href="https://meet.google.com/jsy-ydhn-nyx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0 rounded-full px-4 py-2 text-sm font-bold whitespace-nowrap border bg-[#fff7f0] text-[#f05a28] border-[#eadfd5]">
+          Live Session
+        </a>
+        <a href="https://ai-davidcollins.com" target="_blank" rel="noopener noreferrer" className="flex-shrink-0 rounded-full px-4 py-2 text-sm font-bold whitespace-nowrap border bg-[#15172f] text-[#c4a882] border-[#15172f]">
+          CPD Portal ↗
+        </a>
+      </nav>
+
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-6 md:px-6 md:py-10 md:grid-cols-4">
+
+        {/* SIDEBAR — desktop only */}
+        <aside className="hidden md:block rounded-3xl border border-[#eadfd5] bg-white p-6 shadow-sm md:col-span-1 self-start">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f05a28]">Navigation</p>
           <div className="mt-6 space-y-3">
-            {[
-              { label: "Dashboard", href: "/dashboard" },
-              { label: "Journal", href: "/dashboard/journal" },
-              { label: "Timeline", href: "/dashboard/timeline" },
-              { label: "Goals", href: "/dashboard/goals" },
-              { label: "Reflections", href: "/dashboard/reflections" },
-              { label: "Learning", href: "/learning", active: true },
-            ].map((item) => (
+            {NAV_ITEMS.map((item) => (
               <a key={item.href} href={item.href} className={`block rounded-2xl px-4 py-3 font-semibold ${item.active ? "bg-[#f05a28] text-white" : "border border-[#eadfd5] bg-[#fffaf5] text-slate-700 hover:border-[#f05a28]"}`}>
                 {item.label}
               </a>
@@ -104,29 +126,31 @@ export default function LearningPage() {
           </div>
         </aside>
 
-        <section className="space-y-6 md:col-span-3">
-          <div className="rounded-3xl border border-[#eadfd5] bg-white p-8 shadow-sm">
+        {/* MAIN — full width on mobile, 3 cols on md+ */}
+        <section className="space-y-6 col-span-4 md:col-span-3">
+
+          <div className="rounded-3xl border border-[#eadfd5] bg-white p-6 md:p-8 shadow-sm">
             <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">MAUNi Learning</p>
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f]">Your learning pathways.</h1>
-            <p className="mt-4 text-lg leading-8 text-slate-600">Explore recovery coaching programmes, professional CPD training, and wellness courses designed to support your journey.</p>
+            <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight text-[#15172f]">Your learning pathways.</h1>
+            <p className="mt-4 text-base md:text-lg leading-8 text-slate-600">Explore recovery coaching programmes, professional CPD training, and wellness courses designed to support your journey.</p>
           </div>
 
           <div className="flex gap-2 rounded-2xl border border-[#eadfd5] bg-white p-2 shadow-sm">
-            <button onClick={() => setTab("mauni")} className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${tab === "mauni" ? "bg-[#f05a28] text-white shadow-sm" : "text-slate-600 hover:text-[#f05a28]"}`}>
+            <button onClick={() => setTab("mauni")} className={`flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-colors ${tab === "mauni" ? "bg-[#f05a28] text-white shadow-sm" : "text-slate-600 hover:text-[#f05a28]"}`}>
               MAUNi Courses
             </button>
-            <button onClick={() => setTab("cpd")} className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${tab === "cpd" ? "bg-[#15172f] text-[#c4a882] shadow-sm" : "text-slate-600 hover:text-[#15172f]"}`}>
-              CPD Training — 18 Modules
+            <button onClick={() => setTab("cpd")} className={`flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-colors ${tab === "cpd" ? "bg-[#15172f] text-[#c4a882] shadow-sm" : "text-slate-600 hover:text-[#15172f]"}`}>
+              CPD — 18 Modules
             </button>
           </div>
 
           {tab === "mauni" && (
             loading ? (
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 {[1, 2].map((i) => (<div key={i} className="h-64 animate-pulse rounded-3xl bg-[#eadfd5]" />))}
               </div>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 {courses.map((course) => (
                   <div key={course.id} className="flex flex-col overflow-hidden rounded-3xl border border-[#eadfd5] bg-white shadow-sm transition-shadow hover:shadow-md">
                     {course.image_url ? (
@@ -154,7 +178,7 @@ export default function LearningPage() {
             <div className="space-y-4">
               <div className="rounded-3xl border border-[#c4a882]/40 bg-[#0a1628] p-6 text-white shadow-sm">
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-[#c4a882]">David Collins CPD</p>
-                <h2 className="text-2xl font-bold text-white">18 Accredited Modules</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-white">18 Accredited Modules</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-300">ISO 17024 accredited training. 25 years of lived experience and clinical practice — delivered as structured CPD for healthcare professionals, coaches, and organisations.</p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <a href="https://ai-davidcollins.com" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-[#c4a882] px-5 py-2.5 text-sm font-bold text-[#0a1628] hover:bg-[#d4b892] transition-colors">Open CPD Portal ↗</a>
@@ -176,6 +200,7 @@ export default function LearningPage() {
               </div>
             </div>
           )}
+
         </section>
       </div>
     </main>
