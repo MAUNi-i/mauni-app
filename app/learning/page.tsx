@@ -139,8 +139,8 @@ export default function LearningPage() {
             <button onClick={() => setTab("mauni")} className={`flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-colors ${tab === "mauni" ? "bg-[#f05a28] text-white shadow-sm" : "text-slate-600 hover:text-[#f05a28]"}`}>
               MAUNi Courses
             </button>
-            <button onClick={() => setTab("cpd")} className={`flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-colors ${tab === "cpd" ? "bg-[#15172f] text-[#c4a882] shadow-sm" : "text-slate-600 hover:text-[#15172f]"}`}>
-              CPD — 18 Modules
+            <button onClick={() => setTab("cpd")} className={`flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-colors ${tab === "cpd" ? "bg-[#15172f] text-[#c4a882] shadow-sm" : "bg-[#15172f] text-[#c4a882] opacity-70 hover:opacity-100"}`}>
+  CPD — 18 Modules
             </button>
           </div>
 
