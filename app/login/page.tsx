@@ -62,4 +62,4 @@ function LoginForm() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) { setMessage(error.message); return; }
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setMessage("Sign in failed. Pleas
+      if (!user) { setMessage("Sign in failed. Please try again."); return; }
