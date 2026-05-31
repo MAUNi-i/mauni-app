@@ -91,33 +91,14 @@ export default function LearningPage() {
               { label: "Reflections", href: "/dashboard/reflections" },
               { label: "Learning", href: "/learning", active: true },
             ].map((item) => (
-              
-                <a
-                  key={item.href}
-                href={item.href}
-                className={`block rounded-2xl px-4 py-3 font-semibold ${
-                  item.active
-                    ? "bg-[#f05a28] text-white"
-                    : "border border-[#eadfd5] bg-[#fffaf5] text-slate-700 hover:border-[#f05a28]"
-                }`}
-              >
+              <a key={item.href} href={item.href} className={`block rounded-2xl px-4 py-3 font-semibold ${item.active ? "bg-[#f05a28] text-white" : "border border-[#eadfd5] bg-[#fffaf5] text-slate-700 hover:border-[#f05a28]"}`}>
                 {item.label}
               </a>
             ))}
-            
-              href="https://meet.google.com/jsy-ydhn-nyx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-center font-semibold text-[#f05a28] hover:bg-[#f05a28] hover:text-white transition-colors"
-            >
+            <a href="https://meet.google.com/jsy-ydhn-nyx" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#f05a28] bg-[#fff7f0] px-4 py-3 text-center font-semibold text-[#f05a28] hover:bg-[#f05a28] hover:text-white transition-colors">
               Join Live Session
             </a>
-            
-              href="https://ai-davidcollins.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-2xl border border-[#15172f] bg-[#15172f] px-4 py-3 text-center font-semibold text-[#c4a882] hover:bg-[#0a1628] transition-colors"
-            >
+            <a href="https://ai-davidcollins.com" target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-[#15172f] bg-[#15172f] px-4 py-3 text-center font-semibold text-[#c4a882] hover:bg-[#0a1628] transition-colors">
               CPD Portal ↗
             </a>
           </div>
@@ -125,36 +106,16 @@ export default function LearningPage() {
 
         <section className="space-y-6 md:col-span-3">
           <div className="rounded-3xl border border-[#eadfd5] bg-white p-8 shadow-sm">
-            <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">
-              MAUNi Learning
-            </p>
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f]">
-              Your learning pathways.
-            </h1>
-            <p className="mt-4 text-lg leading-8 text-slate-600">
-              Explore recovery coaching programmes, professional CPD training, and wellness courses designed to support your journey.
-            </p>
+            <p className="mb-4 inline-flex rounded-full border border-[#f05a28]/30 bg-[#fff7f0] px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[#f05a28]">MAUNi Learning</p>
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[#15172f]">Your learning pathways.</h1>
+            <p className="mt-4 text-lg leading-8 text-slate-600">Explore recovery coaching programmes, professional CPD training, and wellness courses designed to support your journey.</p>
           </div>
 
           <div className="flex gap-2 rounded-2xl border border-[#eadfd5] bg-white p-2 shadow-sm">
-            <button
-              onClick={() => setTab("mauni")}
-              className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${
-                tab === "mauni"
-                  ? "bg-[#f05a28] text-white shadow-sm"
-                  : "text-slate-600 hover:text-[#f05a28]"
-              }`}
-            >
+            <button onClick={() => setTab("mauni")} className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${tab === "mauni" ? "bg-[#f05a28] text-white shadow-sm" : "text-slate-600 hover:text-[#f05a28]"}`}>
               MAUNi Courses
             </button>
-            <button
-              onClick={() => setTab("cpd")}
-              className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${
-                tab === "cpd"
-                  ? "bg-[#15172f] text-[#c4a882] shadow-sm"
-                  : "text-slate-600 hover:text-[#15172f]"
-              }`}
-            >
+            <button onClick={() => setTab("cpd")} className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${tab === "cpd" ? "bg-[#15172f] text-[#c4a882] shadow-sm" : "text-slate-600 hover:text-[#15172f]"}`}>
               CPD Training — 18 Modules
             </button>
           </div>
@@ -162,38 +123,24 @@ export default function LearningPage() {
           {tab === "mauni" && (
             loading ? (
               <div className="grid gap-6 md:grid-cols-2">
-                {[1, 2].map((i) => (
-                  <div key={i} className="h-64 animate-pulse rounded-3xl bg-[#eadfd5]" />
-                ))}
+                {[1, 2].map((i) => (<div key={i} className="h-64 animate-pulse rounded-3xl bg-[#eadfd5]" />))}
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
                 {courses.map((course) => (
-                  <div
-                    key={course.id}
-                    className="flex flex-col overflow-hidden rounded-3xl border border-[#eadfd5] bg-white shadow-sm transition-shadow hover:shadow-md"
-                  >
+                  <div key={course.id} className="flex flex-col overflow-hidden rounded-3xl border border-[#eadfd5] bg-white shadow-sm transition-shadow hover:shadow-md">
                     {course.image_url ? (
                       <div className="relative h-40 w-full bg-[#f8f5ef]">
                         <img src={course.image_url} alt={course.name} className="h-full w-full object-cover" />
                       </div>
                     ) : (
-                      <div className="flex h-40 items-center justify-center bg-[#fff7f0]">
-                        <span className="text-4xl">📚</span>
-                      </div>
+                      <div className="flex h-40 items-center justify-center bg-[#fff7f0]"><span className="text-4xl">📚</span></div>
                     )}
                     <div className="flex flex-1 flex-col p-6">
-                      <span className="mb-3 inline-block rounded-full bg-[#fff7f0] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f05a28]">
-                        {course.is_free ? "Free" : "Premium"}
-                      </span>
+                      <span className="mb-3 inline-block rounded-full bg-[#fff7f0] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f05a28]">{course.is_free ? "Free" : "Premium"}</span>
                       <h3 className="text-lg font-bold leading-tight text-[#15172f]">{course.name}</h3>
-                      {course.heading && (
-                        <p className="mt-2 flex-1 text-sm leading-6 text-slate-600 line-clamp-3">{course.heading}</p>
-                      )}
-                      
-                        href="/courses/uactlero"
-                        className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]"
-                      >
+                      {course.heading && (<p className="mt-2 flex-1 text-sm leading-6 text-slate-600 line-clamp-3">{course.heading}</p>)}
+                      <a href="/courses/uactlero" className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]">
                         {course.is_free ? "Start Course" : "View Course"}
                       </a>
                     </div>
@@ -208,48 +155,20 @@ export default function LearningPage() {
               <div className="rounded-3xl border border-[#c4a882]/40 bg-[#0a1628] p-6 text-white shadow-sm">
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-[#c4a882]">David Collins CPD</p>
                 <h2 className="text-2xl font-bold text-white">18 Accredited Modules</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  ISO 17024 accredited training. 25 years of lived experience and clinical practice — delivered as structured CPD for healthcare professionals, coaches, and organisations.
-                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">ISO 17024 accredited training. 25 years of lived experience and clinical practice — delivered as structured CPD for healthcare professionals, coaches, and organisations.</p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  
-                    href="https://ai-davidcollins.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl bg-[#c4a882] px-5 py-2.5 text-sm font-bold text-[#0a1628] hover:bg-[#d4b892] transition-colors"
-                  >
-                    Open CPD Portal ↗
-                  </a>
-                  
-                    href="https://buy.stripe.com/8x2fZg8mT0P92qdc5D53O02"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl border border-[#c4a882]/50 px-5 py-2.5 text-sm font-bold text-[#c4a882] hover:border-[#c4a882] transition-colors"
-                  >
-                    Full Course £299
-                  </a>
+                  <a href="https://ai-davidcollins.com" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-[#c4a882] px-5 py-2.5 text-sm font-bold text-[#0a1628] hover:bg-[#d4b892] transition-colors">Open CPD Portal ↗</a>
+                  <a href="https://buy.stripe.com/8x2fZg8mT0P92qdc5D53O02" target="_blank" rel="noopener noreferrer" className="rounded-xl border border-[#c4a882]/50 px-5 py-2.5 text-sm font-bold text-[#c4a882] hover:border-[#c4a882] transition-colors">Full Course £299</a>
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {CPD_MODULES.map((mod) => (
-                  
-                    key={mod.num}
-                    href={`https://ai-davidcollins.com/${mod.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-start gap-4 rounded-2xl border border-[#eadfd5] bg-white p-4 shadow-sm transition-all hover:border-[#0a1628] hover:shadow-md"
-                  >
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a1628] text-xs font-bold text-[#c4a882]">
-                      {mod.num}
-                    </span>
+                  <a key={mod.num} href={`https://ai-davidcollins.com/${mod.slug}`} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-4 rounded-2xl border border-[#eadfd5] bg-white p-4 shadow-sm transition-all hover:border-[#0a1628] hover:shadow-md">
+                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a1628] text-xs font-bold text-[#c4a882]">{mod.num}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[#15172f] leading-snug group-hover:text-[#0a1628]">
-                        {mod.title}
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        {mod.free ? "Free preview" : "1 CPD hour"}
-                      </p>
+                      <p className="font-semibold text-[#15172f] leading-snug group-hover:text-[#0a1628]">{mod.title}</p>
+                      <p className="mt-1 text-xs text-slate-500">{mod.free ? "Free preview" : "1 CPD hour"}</p>
                     </div>
                     <span className="text-slate-300 group-hover:text-[#c4a882] transition-colors">↗</span>
                   </a>
