@@ -39,7 +39,8 @@ export default function Home() {
             <a href="#tools" className="hover:text-[#f05a28]">Tools</a>
             <a href="#coach" className="hover:text-[#f05a28]">Recovery Coach</a>
             <a href="#contact" className="hover:text-[#f05a28]">Contact</a>
-         <div className="flex items-center gap-3">
+          </nav>
+          <div className="flex items-center gap-3">
             <a href="/login" className="text-sm font-semibold text-slate-600 hover:text-[#f05a28]">Sign In</a>
             <a href="/signup" className="rounded-full bg-[#f05a28] px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#d94e20]">Get Started</a>
           </div>
