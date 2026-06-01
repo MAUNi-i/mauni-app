@@ -164,7 +164,7 @@ export default function LearningPage() {
                       <span className="mb-3 inline-block rounded-full bg-[#fff7f0] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f05a28]">{course.is_free ? "Free" : "Premium"}</span>
                       <h3 className="text-lg font-bold leading-tight text-[#15172f]">{course.name}</h3>
                       {course.heading && (<p className="mt-2 flex-1 text-sm leading-6 text-slate-600 line-clamp-3">{course.heading}</p>)}
-                      <a href="/courses/uactlero" className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]">
+                      <a href="https://app.mauniuact.com/courses/uactlero" className="mt-4 block rounded-2xl bg-[#f05a28] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#d94e20]">
                         {course.is_free ? "Start Course" : "View Course"}
                       </a>
                     </div>
